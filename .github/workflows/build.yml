@@ -1,0 +1,59 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build application
+        run: bun run build
+
+      - name: Create distribution archive
+        run: |
+          cd dist
+          cp ../.env.example .env.example
+          7z a -tzip ../my-simple-tools.zip *
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-simple-tools-windows
+          path: my-simple-tools.zip
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-simple-tools-windows
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: my-simple-tools.zip
+          generate_release_notes: true

@@ -1,0 +1,33 @@
+{
+  "name": "my-simple-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run server/index.ts",
+    "dev:frontend": "vite",
+    "build": "bun run build:frontend && bun run build:app && bun run build:fix && bun run build:copy",
+    "build:frontend": "vite build",
+    "build:app": "bun build server/index.ts --compile --outfile dist/my-simple-tools.exe",
+    "build:fix": "python fix-subsystem.py dist/my-simple-tools.exe",
+    "build:copy": "cp config.json dist/",
+    "start": "bun run server/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/ssh2": "^1.15.5",
+    "@vitejs/plugin-react": "^5.1.4",
+    "vite": "^7.3.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "ssh2": "^1.17.0",
+    "webview-bun": "^2.4.0"
+  }
+}

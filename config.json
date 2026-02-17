@@ -1,0 +1,45 @@
+{
+  "tools": {
+    "base64": {
+      "enabled": true,
+      "label": "Base64 to File",
+      "icon": "📄"
+    },
+    "fileToBase64": {
+      "enabled": true,
+      "label": "File to Base64",
+      "icon": "📁"
+    },
+    "jwt": {
+      "enabled": true,
+      "label": "JWT Decoder",
+      "icon": "🔑"
+    },
+    "xray": {
+      "enabled": true,
+      "label": "XRay Config",
+      "icon": "⚙️"
+    },
+    "proxy": {
+      "enabled": true,
+      "label": "Proxy",
+      "icon": "🔀"
+    }
+  },
+  "ssh": {
+    "host": "192.168.1.1",
+    "port": 222,
+    "username": "root",
+    "password": "",
+    "configPath": "/opt/etc/xray/configs/05_routing.json"
+  },
+  "app": {
+    "port": 3001,
+    "openBrowser": true
+  },
+  "base64": {
+    "defaultOutputDir": "./output",
+    "rememberLastFormat": true,
+    "lastUsedFormat": "bin"
+  }
+}
