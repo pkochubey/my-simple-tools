@@ -1,6 +1,6 @@
 # My Simple Tools
 
-Windows desktop-приложение с набором утилит для разработчиков.
+Windows desktop application with a collection of developer utilities.
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![Runtime](https://img.shields.io/badge/runtime-Bun.js-orange)
@@ -8,37 +8,37 @@ Windows desktop-приложение с набором утилит для ра�
 ## Features
 
 ### Base64 to File
-Конвертация base64-строк в файлы.
-- Извлечение base64 из JSON или произвольного текста
-- Автоопределение формата по magic bytes (PNG, JPG, PDF, ZIP, EXE и др.)
-- Ручной выбор формата сохранения
-- Drag & drop файлов
+Convert base64 strings to files.
+- Extract base64 from JSON or arbitrary text
+- Auto-detect file format by magic bytes (PNG, JPG, PDF, ZIP, EXE, etc.)
+- Manual format selection for saving
+- Drag & drop file support
 
 ### File to Base64
-Обратная конвертация файлов в base64.
-- Поддержка любых форматов файлов
-- Копирование результата в буфер обмена
+Convert files to base64 strings.
+- Support for any file format
+- Copy result to clipboard
 
 ### JWT Decoder
-Декодирование и анализ JWT токенов.
-- Отображение header и payload в форматированном JSON
-- Проверка срока действия (expired/valid)
-- Отображение времени истечения в читаемом формате
+Decode and analyze JWT tokens.
+- Display header and payload in formatted JSON
+- Check expiration status (expired/valid)
+- Show expiration time in human-readable format
 
 ### XRay Config Editor
-Редактирование XRay routing конфигурации через SSH.
-- SSH подключение к удалённому серверу
-- Загрузка и сохранение `05_routing.json`
-- **Поиск по тексту** с навигацией по результатам
-- Форматирование JSON
-- Управление Xkeen (start/stop/restart)
+Edit XRay routing configuration via SSH.
+- SSH connection to remote server
+- Load and save `05_routing.json`
+- **Text search** with result navigation
+- JSON formatting
+- Xkeen control (start/stop/restart)
 
 ### Reverse Proxy
-Лёгкий reverse proxy сервер.
-- Маршрутизация по path prefix → target URL
-- Добавление/удаление/редактирование маршрутов
-- Включение/отключение отдельных маршрутов
-- Логирование запросов
+Lightweight reverse proxy server.
+- Route by path prefix → target URL
+- Add/delete/edit routes
+- Enable/disable individual routes
+- Request logging
 
 ## Tech Stack
 
@@ -50,13 +50,13 @@ Windows desktop-приложение с набором утилит для ра�
 ## Development
 
 ```bash
-# Установка зависимостей
+# Install dependencies
 bun install
 
-# Запуск backend сервера
+# Run backend server
 bun run dev
 
-# Запуск frontend (в другом терминале)
+# Run frontend (in another terminal)
 bun run dev:frontend
 ```
 
@@ -66,16 +66,16 @@ bun run dev:frontend
 bun run build
 ```
 
-Результат в `dist/`:
-- `my-simple-tools.exe` — исполняемый файл (GUI, без консоли)
-- `frontend/` — статические файлы интерфейса
-- `config.json` — конфигурация
+Output in `dist/`:
+- `my-simple-tools.exe` — executable (GUI, no console window)
+- `frontend/` — static frontend files
+- `config.json` — configuration
 
 ## Configuration
 
 ### config.json
 
-Основной файл конфигурации:
+Main configuration file:
 
 ```json
 {
@@ -107,22 +107,22 @@ bun run build
 
 ### Environment Variables
 
-Для SSH пароля используйте `.env` файл (рекомендуется для безопасности):
+For SSH password, use a `.env` file (recommended for security):
 
 ```bash
 # .env
 SSH_PASSWORD=your_password_here
 ```
 
-Скопируйте `.env.example` в `.env` и укажите свой пароль. Файл `.env` добавлен в `.gitignore`.
+Copy `.env.example` to `.env` and set your password. The `.env` file is included in `.gitignore`.
 
 ## Usage
 
-1. Поместите `config.json` и `.env` рядом с `my-simple-tools.exe`
-2. Запустите `my-simple-tools.exe`
-3. Приложение откроется в нативном окне
+1. Place `config.json` and `.env` next to `my-simple-tools.exe`
+2. Run `my-simple-tools.exe`
+3. The application will open in a native window
 
 ## Requirements
 
 - Windows 10/11
-- Для сборки: Bun.js 1.0+
+- For building: Bun.js 1.0+
