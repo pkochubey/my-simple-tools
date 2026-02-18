@@ -9,7 +9,9 @@ export interface ToolConfig {
 
 export interface ToolsConfig {
   base64: ToolConfig
+  fileToBase64: ToolConfig
   jwt: ToolConfig
+  jsonFormatter: ToolConfig
   xray: ToolConfig
   proxy: ToolConfig
 }
@@ -73,9 +75,12 @@ export function loadConfig(): Config {
 export function getDefaultConfig(): Config {
   return {
     tools: {
-      base64: { enabled: true, label: 'Base64', icon: '📄' },
+      base64: { enabled: true, label: 'Base64 to File', icon: '📄' },
+      fileToBase64: { enabled: true, label: 'File to Base64', icon: '📁' },
       jwt: { enabled: true, label: 'JWT Decoder', icon: '🔑' },
-      xray: { enabled: true, label: 'XRay Config', icon: '⚙️' }
+      jsonFormatter: { enabled: true, label: 'JSON Formatter', icon: '📝' },
+      xray: { enabled: true, label: 'XRay Config', icon: '⚙️' },
+      proxy: { enabled: true, label: 'Proxy', icon: '🔀' }
     },
     ssh: {
       host: '192.168.1.1',

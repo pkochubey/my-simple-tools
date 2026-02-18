@@ -3,10 +3,11 @@ import type { FC } from 'react'
 import Base64Tool from './components/Base64Tool'
 import FileToBase64Tool from './components/FileToBase64Tool'
 import JwtTool from './components/JwtTool'
+import JsonFormatter from './components/JsonFormatter'
 import XrayConfig from './components/XrayConfig'
 import ProxyTool from './components/ProxyTool'
 
-type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'xray' | 'proxy'
+type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy'
 
 interface ToolConfig {
   enabled: boolean
@@ -19,6 +20,7 @@ interface Config {
     base64: ToolConfig
     fileToBase64: ToolConfig
     jwt: ToolConfig
+    jsonFormatter: ToolConfig
     xray: ToolConfig
     proxy: ToolConfig
   }
@@ -40,6 +42,7 @@ const App: FC = () => {
           if (tools.base64?.enabled) setActiveTab('base64')
           else if (tools.fileToBase64?.enabled) setActiveTab('fileToBase64')
           else if (tools.jwt?.enabled) setActiveTab('jwt')
+          else if (tools.jsonFormatter?.enabled) setActiveTab('jsonFormatter')
           else if (tools.xray?.enabled) setActiveTab('xray')
           else if (tools.proxy?.enabled) setActiveTab('proxy')
         }
@@ -51,6 +54,7 @@ const App: FC = () => {
             base64: { enabled: true, label: 'Base64 to File', icon: '📄' },
             fileToBase64: { enabled: true, label: 'File to Base64', icon: '📁' },
             jwt: { enabled: true, label: 'JWT Decoder', icon: '🔑' },
+            jsonFormatter: { enabled: true, label: 'JSON Formatter', icon: '📝' },
             xray: { enabled: true, label: 'XRay Config', icon: '⚙️' },
             proxy: { enabled: true, label: 'Proxy', icon: '🔀' }
           }
@@ -98,6 +102,15 @@ const App: FC = () => {
               <span className="tab-label">{tools.jwt.label || 'JWT Decoder'}</span>
             </button>
           )}
+          {tools.jsonFormatter?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'jsonFormatter' ? 'active' : ''}`}
+              onClick={() => setActiveTab('jsonFormatter')}
+            >
+              <span className="tab-icon">{tools.jsonFormatter.icon || '📝'}</span>
+              <span className="tab-label">{tools.jsonFormatter.label || 'JSON Formatter'}</span>
+            </button>
+          )}
           {tools.xray?.enabled && (
             <button
               className={`sidebar-tab ${activeTab === 'xray' ? 'active' : ''}`}
@@ -119,10 +132,11 @@ const App: FC = () => {
         </nav>
       </aside>
 
-      <main className="main-content">
+      <main className={`main-content ${activeTab === 'jsonFormatter' ? 'full-height' : ''}`}>
         {activeTab === 'base64' && tools.base64?.enabled && <Base64Tool />}
         {activeTab === 'fileToBase64' && tools.fileToBase64?.enabled && <FileToBase64Tool />}
         {activeTab === 'jwt' && tools.jwt?.enabled && <JwtTool />}
+        {activeTab === 'jsonFormatter' && tools.jsonFormatter?.enabled && <JsonFormatter />}
         {activeTab === 'xray' && tools.xray?.enabled && <XrayConfig />}
         {activeTab === 'proxy' && tools.proxy?.enabled && <ProxyTool />}
       </main>

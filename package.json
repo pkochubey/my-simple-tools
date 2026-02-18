@@ -8,7 +8,7 @@
     "dev:frontend": "vite",
     "build": "bun run build:frontend && bun run build:app && bun run build:fix && bun run build:copy",
     "build:frontend": "vite build",
-    "build:app": "bun build server/index.ts --compile --outfile dist/my-simple-tools.exe",
+    "build:app": "bun build server/index.ts --windows-icon ./icon.ico --compile --outfile dist/my-simple-tools.exe",
     "build:fix": "python fix-subsystem.py dist/my-simple-tools.exe",
     "build:copy": "cp config.json dist/",
     "start": "bun run server/index.ts"
@@ -25,8 +25,10 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-syntax-highlighter": "^16.1.0",
     "ssh2": "^1.17.0",
     "webview-bun": "^2.4.0"
   }

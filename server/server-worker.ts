@@ -5,6 +5,7 @@ import { loadConfig, saveConfig, type Config } from './config'
 import { readXrayConfig, writeXrayConfig, testSSHConnection, xkeenAction } from './ssh'
 import { decodeJWT } from './jwt'
 import { convertBase64ToFile, extractBase64FromText, detectFileFormat, convertFileToBase64 } from './base64'
+import { formatJson, minifyJson, type FormatOptions } from './json'
 import { getProxyStatus, setProxyPort, addProxyRoute, removeProxyRoute, editProxyRoute, toggleProxyRoute, startProxy, stopProxy, clearProxyLogs } from './proxy'
 
 const config = loadConfig()
@@ -171,6 +172,19 @@ async function handleAPI(req: Request, path: string): Promise<Response> {
     if (path === '/api/proxy/logs/clear' && method === 'POST') {
       clearProxyLogs()
       return Response.json({ success: true })
+    }
+
+    // JSON Formatter endpoints
+    if (path === '/api/json/format' && method === 'POST') {
+      const body = await req.json() as { input: string; options?: FormatOptions }
+      const result = formatJson(body.input, body.options)
+      return Response.json(result)
+    }
+
+    if (path === '/api/json/minify' && method === 'POST') {
+      const body = await req.json() as { input: string }
+      const result = minifyJson(body.input)
+      return Response.json(result)
     }
 
     return Response.json({ success: false, error: 'Unknown API endpoint' }, { status: 404 })

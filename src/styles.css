@@ -99,6 +99,14 @@ body {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Full-height mode for JSON Formatter */
+.main-content.full-height {
+  overflow: hidden;
+  padding: 16px;
 }
 
 .loading {
@@ -341,6 +349,12 @@ button:disabled {
   background: rgba(74, 222, 128, 0.1);
   border: 1px solid var(--success);
   color: var(--success);
+}
+
+.result.warning {
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid #facc15;
+  color: #facc15;
 }
 
 .result.error {
@@ -953,4 +967,163 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* JSON Formatter */
+.options-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.indent-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.indent-selector label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.json-input {
+  min-height: 200px;
+}
+
+/* JSON Formatter Full-Height Layout */
+.json-formatter-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.json-formatter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.json-formatter-header h2 {
+  margin: 0;
+}
+
+.json-options-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.json-textarea-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.json-input-full {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  resize: none;
+}
+
+/* JSON Editor with Syntax Highlighting */
+.json-editor-container {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.json-editor-container:focus-within {
+  border-color: var(--accent);
+}
+
+.json-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  margin: 0;
+}
+
+.json-input-overlay {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  padding: 12px;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--text-primary);
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: none;
+  z-index: 2;
+  overflow: auto;
+  white-space: pre;
+  tab-size: 2;
+  border: none;
+  outline: none;
+  display: block;
+}
+
+.json-input-overlay:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.json-input-overlay::selection {
+  background: rgba(233, 69, 96, 0.3);
+}
+
+.json-formatter-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.json-button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-spacer {
+  flex: 1;
+  min-width: 100px;
 }

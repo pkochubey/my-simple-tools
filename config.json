@@ -15,6 +15,11 @@
       "label": "JWT Decoder",
       "icon": "🔑"
     },
+    "jsonFormatter": {
+      "enabled": true,
+      "label": "JSON Formatter",
+      "icon": "📝"
+    },
     "xray": {
       "enabled": true,
       "label": "XRay Config",
