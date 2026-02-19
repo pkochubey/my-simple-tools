@@ -29,6 +29,21 @@
       "enabled": true,
       "label": "Proxy",
       "icon": "🔀"
+    },
+    "generator": {
+      "enabled": true,
+      "label": "Generator",
+      "icon": "🎲"
+    },
+    "timestamp": {
+      "enabled": true,
+      "label": "Timestamp",
+      "icon": "🕒"
+    },
+    "cron": {
+      "enabled": true,
+      "label": "Cron Explainer",
+      "icon": "📅"
     }
   },
   "ssh": {

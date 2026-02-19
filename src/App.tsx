@@ -6,8 +6,11 @@ import JwtTool from './components/JwtTool'
 import JsonFormatter from './components/JsonFormatter'
 import XrayConfig from './components/XrayConfig'
 import ProxyTool from './components/ProxyTool'
+import GeneratorTool from './components/GeneratorTool'
+import TimestampTool from './components/TimestampTool'
+import CronTool from './components/CronTool'
 
-type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy'
+type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron'
 
 interface ToolConfig {
   enabled: boolean
@@ -23,6 +26,9 @@ interface Config {
     jsonFormatter: ToolConfig
     xray: ToolConfig
     proxy: ToolConfig
+    generator: ToolConfig
+    timestamp: ToolConfig
+    cron: ToolConfig
   }
 }
 
@@ -45,6 +51,9 @@ const App: FC = () => {
           else if (tools.jsonFormatter?.enabled) setActiveTab('jsonFormatter')
           else if (tools.xray?.enabled) setActiveTab('xray')
           else if (tools.proxy?.enabled) setActiveTab('proxy')
+          else if (tools.generator?.enabled) setActiveTab('generator')
+          else if (tools.timestamp?.enabled) setActiveTab('timestamp')
+          else if (tools.cron?.enabled) setActiveTab('cron')
         }
       })
       .catch(() => {
@@ -56,7 +65,10 @@ const App: FC = () => {
             jwt: { enabled: true, label: 'JWT Decoder', icon: '🔑' },
             jsonFormatter: { enabled: true, label: 'JSON Formatter', icon: '📝' },
             xray: { enabled: true, label: 'XRay Config', icon: '⚙️' },
-            proxy: { enabled: true, label: 'Proxy', icon: '🔀' }
+            proxy: { enabled: true, label: 'Proxy', icon: '🔀' },
+            generator: { enabled: true, label: 'Generator', icon: '🎲' },
+            timestamp: { enabled: true, label: 'Timestamp', icon: '🕒' },
+            cron: { enabled: true, label: 'Cron Explainer', icon: '📅' }
           }
         })
       })
@@ -129,6 +141,33 @@ const App: FC = () => {
               <span className="tab-label">{tools.proxy.label || 'Proxy'}</span>
             </button>
           )}
+          {tools.generator?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'generator' ? 'active' : ''}`}
+              onClick={() => setActiveTab('generator')}
+            >
+              <span className="tab-icon">{tools.generator.icon || '🎲'}</span>
+              <span className="tab-label">{tools.generator.label || 'Generator'}</span>
+            </button>
+          )}
+          {tools.timestamp?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'timestamp' ? 'active' : ''}`}
+              onClick={() => setActiveTab('timestamp')}
+            >
+              <span className="tab-icon">{tools.timestamp.icon || '🕒'}</span>
+              <span className="tab-label">{tools.timestamp.label || 'Timestamp'}</span>
+            </button>
+          )}
+          {tools.cron?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'cron' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cron')}
+            >
+              <span className="tab-icon">{tools.cron.icon || '📅'}</span>
+              <span className="tab-label">{tools.cron.label || 'Cron'}</span>
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -139,6 +178,9 @@ const App: FC = () => {
         {activeTab === 'jsonFormatter' && tools.jsonFormatter?.enabled && <JsonFormatter />}
         {activeTab === 'xray' && tools.xray?.enabled && <XrayConfig />}
         {activeTab === 'proxy' && tools.proxy?.enabled && <ProxyTool />}
+        {activeTab === 'generator' && tools.generator?.enabled && <GeneratorTool />}
+        {activeTab === 'timestamp' && tools.timestamp?.enabled && <TimestampTool />}
+        {activeTab === 'cron' && tools.cron?.enabled && <CronTool />}
       </main>
     </div>
   )

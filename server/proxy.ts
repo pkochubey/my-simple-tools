@@ -18,6 +18,10 @@ export interface ProxyLogEntry {
   status: number
   duration: number
   routeId: string
+  requestHeaders?: Record<string, string>
+  requestBody?: string
+  responseHeaders?: Record<string, string>
+  responseBody?: string
 }
 
 interface ProxyState {
@@ -154,6 +158,11 @@ async function handleProxyRequest(req: Request): Promise<Response> {
   const startTime = Date.now()
 
   const route = findMatchingRoute(path)
+  
+  // Capture request headers
+  const reqHeaders: Record<string, string> = {}
+  req.headers.forEach((v, k) => reqHeaders[k] = v)
+
   if (!route) {
     addLog({
       timestamp: Date.now(),
@@ -163,6 +172,7 @@ async function handleProxyRequest(req: Request): Promise<Response> {
       status: 404,
       duration: Date.now() - startTime,
       routeId: '',
+      requestHeaders: reqHeaders,
     })
     return new Response(JSON.stringify({ error: 'No matching route for path: ' + path }), {
       status: 404,
@@ -191,15 +201,48 @@ async function handleProxyRequest(req: Request): Promise<Response> {
   forwardHeaders.set('X-Forwarded-Host', url.host)
 
   try {
-    const body = ['GET', 'HEAD'].includes(req.method) ? undefined : await req.arrayBuffer()
+    const rawBody = ['GET', 'HEAD'].includes(req.method) ? undefined : await req.arrayBuffer()
+    let reqBodyStr: string | undefined
+    
+    if (rawBody && rawBody.byteLength < 100000) { // Limit to 100KB for logging
+      try {
+        reqBodyStr = new TextDecoder().decode(rawBody)
+      } catch (e) {
+        reqBodyStr = `[Binary data: ${rawBody.byteLength} bytes]`
+      }
+    } else if (rawBody) {
+      reqBodyStr = `[Body too large: ${rawBody.byteLength} bytes]`
+    }
 
     const proxyRes = await fetch(targetUrl, {
       method: req.method,
       headers: forwardHeaders,
-      body: body ? body : undefined,
+      body: rawBody ? rawBody : undefined,
     })
 
     const duration = Date.now() - startTime
+    
+    // Capture response headers
+    const resHeaders: Record<string, string> = {}
+    proxyRes.headers.forEach((v, k) => resHeaders[k] = v)
+
+    const responseBody = await proxyRes.arrayBuffer()
+    let resBodyStr: string | undefined
+    
+    if (responseBody.byteLength < 100000) {
+      try {
+        const contentType = resHeaders['content-type'] || ''
+        if (contentType.includes('json') || contentType.includes('text') || contentType.includes('xml') || contentType.includes('javascript')) {
+          resBodyStr = new TextDecoder().decode(responseBody)
+        } else {
+          resBodyStr = `[Binary data: ${responseBody.byteLength} bytes]`
+        }
+      } catch (e) {
+        resBodyStr = `[Error decoding: ${responseBody.byteLength} bytes]`
+      }
+    } else {
+      resBodyStr = `[Body too large: ${responseBody.byteLength} bytes]`
+    }
 
     addLog({
       timestamp: Date.now(),
@@ -209,6 +252,10 @@ async function handleProxyRequest(req: Request): Promise<Response> {
       status: proxyRes.status,
       duration,
       routeId: route.id,
+      requestHeaders: reqHeaders,
+      requestBody: reqBodyStr,
+      responseHeaders: resHeaders,
+      responseBody: resBodyStr,
     })
 
     // Forward response headers, removing hop-by-hop
@@ -220,8 +267,6 @@ async function handleProxyRequest(req: Request): Promise<Response> {
     })
     // Allow CORS from our main app
     responseHeaders.set('Access-Control-Allow-Origin', '*')
-
-    const responseBody = await proxyRes.arrayBuffer()
 
     return new Response(responseBody, {
       status: proxyRes.status,
@@ -240,12 +285,37 @@ async function handleProxyRequest(req: Request): Promise<Response> {
       status: 502,
       duration,
       routeId: route.id,
+      requestHeaders: reqHeaders,
     })
 
     return new Response(JSON.stringify({ error: 'Proxy error: ' + errorMsg }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },
     })
+  }
+}
+
+export async function repeatProxyRequest(logId: string): Promise<{ success: boolean; status?: number; error?: string; body?: string }> {
+  const log = state.logs.find(l => l.id === logId)
+  if (!log) return { success: false, error: 'Log entry not found' }
+
+  try {
+    const headers = new Headers()
+    if (log.requestHeaders) {
+      Object.entries(log.requestHeaders).forEach(([k, v]) => headers.set(k, v))
+    }
+
+    const res = await fetch(log.targetUrl, {
+      method: log.method,
+      headers,
+      body: log.requestBody && !['GET', 'HEAD'].includes(log.method) ? log.requestBody : undefined,
+    })
+
+    const body = await res.text()
+    return { success: true, status: res.status, body }
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Failed to repeat request'
+    return { success: false, error: msg }
   }
 }
 

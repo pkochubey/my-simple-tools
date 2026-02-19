@@ -8,25 +8,60 @@ Windows desktop application with a collection of developer utilities.
 ## Features
 
 ### Base64 to File
+
 Convert base64 strings to files.
+
 - Extract base64 from JSON or arbitrary text
 - Auto-detect file format by magic bytes (PNG, JPG, PDF, ZIP, EXE, etc.)
 - Manual format selection for saving
 - Drag & drop file support
 
 ### File to Base64
+
 Convert files to base64 strings.
+
 - Support for any file format
 - Copy result to clipboard
 
 ### JWT Decoder
+
 Decode and analyze JWT tokens.
+
 - Display header and payload in formatted JSON
 - Check expiration status (expired/valid)
 - Show expiration time in human-readable format
 
+### Generator
+
+UUID and Password/Secret generation.
+
+- Generate UUID v4
+- Configurable password length (8-64)
+- Customizable character sets (Uppercase, Numbers, Symbols)
+- One-click copy to clipboard
+
+### Unix Timestamp Converter
+
+Bidirectional date-time conversion.
+
+- Timestamp ↔ Human-readable date
+- Support for Seconds and Milliseconds
+- Current time display and "Use Current" feature
+- Support for ISO and local formats
+
+### Cron Expression Explainer
+
+Human-readable cron descriptions.
+
+- Instant translation of cron expressions
+- 24-hour format support
+- Predefined common examples
+- Real-time syntax validation
+
 ### XRay Config Editor
+
 Edit XRay routing configuration via SSH.
+
 - SSH connection to remote server
 - Load and save `05_routing.json`
 - **Text search** with result navigation
@@ -34,11 +69,15 @@ Edit XRay routing configuration via SSH.
 - Xkeen control (start/stop/restart)
 
 ### Reverse Proxy
+
 Lightweight reverse proxy server.
+
 - Route by path prefix → target URL
 - Add/delete/edit routes
 - Enable/disable individual routes
-- Request logging
+- **Request Inspector** (view headers and body)
+- **Repeat Request** functionality
+- Real-time request logging
 
 ## Tech Stack
 
@@ -67,43 +106,10 @@ bun run build
 ```
 
 Output in `dist/`:
+
 - `my-simple-tools.exe` — executable (GUI, no console window)
 - `frontend/` — static frontend files
 - `config.json` — configuration
-
-## Configuration
-
-### config.json
-
-Main configuration file:
-
-```json
-{
-  "tools": {
-    "base64": { "enabled": true, "label": "Base64 to File", "icon": "📄" },
-    "fileToBase64": { "enabled": true, "label": "File to Base64", "icon": "📁" },
-    "jwt": { "enabled": true, "label": "JWT Decoder", "icon": "🔑" },
-    "xray": { "enabled": true, "label": "XRay Config", "icon": "⚙️" },
-    "proxy": { "enabled": true, "label": "Proxy", "icon": "🔀" }
-  },
-  "ssh": {
-    "host": "192.168.1.1",
-    "port": 222,
-    "username": "root",
-    "password": "",
-    "configPath": "/opt/etc/xray/configs/05_routing.json"
-  },
-  "app": {
-    "port": 3001,
-    "openBrowser": true
-  },
-  "base64": {
-    "defaultOutputDir": "./output",
-    "rememberLastFormat": true,
-    "lastUsedFormat": "bin"
-  }
-}
-```
 
 ### Environment Variables
 

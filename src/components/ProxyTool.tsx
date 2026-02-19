@@ -17,6 +17,10 @@ interface ProxyLogEntry {
   status: number
   duration: number
   routeId: string
+  requestHeaders?: Record<string, string>
+  requestBody?: string
+  responseHeaders?: Record<string, string>
+  responseBody?: string
 }
 
 const ProxyTool: FC = () => {
@@ -35,13 +39,20 @@ const ProxyTool: FC = () => {
 
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [selectedLogId, setSelectedLogId] = useState<string | null>(null)
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const fetchStatus = async () => {
     try {
       const res = await fetch('/api/proxy/status')
-      const data = await res.json() as { success: boolean; running: boolean; port: number; routes: ProxyRoute[]; logs: ProxyLogEntry[] }
+      const data = await res.json() as { 
+        success: boolean; 
+        running: boolean; 
+        port: number; 
+        routes: ProxyRoute[]; 
+        logs: ProxyLogEntry[] 
+      }
       if (data.success) {
         setRunning(data.running)
         setPort(data.port)
@@ -243,9 +254,31 @@ const ProxyTool: FC = () => {
     try {
       await fetch('/api/proxy/logs/clear', { method: 'POST' })
       setLogs([])
+      setSelectedLogId(null)
     } catch {
       // ignore
     }
+  }
+
+  const repeatRequest = async (logId: string) => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/proxy/repeat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logId }),
+      })
+      const data = await res.json() as { success: boolean; status?: number; error?: string; body?: string }
+      if (data.success) {
+        setResult({ success: true, message: `Request repeated. Status: ${data.status}` })
+        await fetchStatus()
+      } else {
+        setResult({ success: false, message: data.error || 'Failed to repeat request' })
+      }
+    } catch {
+      setResult({ success: false, message: 'Connection error' })
+    }
+    setLoading(false)
   }
 
   const getStatusColor = (status: number): string => {
@@ -410,7 +443,7 @@ const ProxyTool: FC = () => {
         </div>
       )}
 
-      {/* Logs */}
+          {/* Logs */}
       <div className="proxy-control-panel">
         <div className="proxy-logs-header">
           <h3>Request Log</h3>
@@ -424,27 +457,172 @@ const ProxyTool: FC = () => {
         )}
 
         {logs.length > 0 && (
-          <div className="proxy-log-list">
-            {logs.map(log => (
-              <div key={log.id} className="proxy-log-entry">
-                <span className="proxy-log-time">
-                  {new Date(log.timestamp).toLocaleTimeString()}
-                </span>
-                <span className="proxy-log-method" style={{ color: getMethodColor(log.method) }}>
-                  {log.method}
-                </span>
-                <span className="proxy-log-path">{log.path}</span>
-                <span className="proxy-log-arrow">→</span>
-                <span className="proxy-log-target">{log.targetUrl}</span>
-                <span className="proxy-log-status" style={{ color: getStatusColor(log.status) }}>
-                  {log.status}
-                </span>
-                <span className="proxy-log-duration">{log.duration}ms</span>
+          <div className="proxy-log-viewer">
+            <div className="proxy-log-list">
+              {logs.map(log => (
+                <div 
+                  key={log.id} 
+                  className={`proxy-log-entry ${selectedLogId === log.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedLogId(log.id)}
+                >
+                  <span className="proxy-log-time">
+                    {new Date(log.timestamp).toLocaleTimeString()}
+                  </span>
+                  <span className="proxy-log-method" style={{ color: getMethodColor(log.method) }}>
+                    {log.method}
+                  </span>
+                  <span className="proxy-log-path">{log.path}</span>
+                  <span className="proxy-log-status" style={{ color: getStatusColor(log.status) }}>
+                    {log.status}
+                  </span>
+                  <span className="proxy-log-duration">{log.duration}ms</span>
+                </div>
+              ))}
+            </div>
+
+            {selectedLogId && logs.find(l => l.id === selectedLogId) && (
+              <div className="proxy-log-details">
+                {(() => {
+                  const log = logs.find(l => l.id === selectedLogId)!
+                  return (
+                    <>
+                      <div className="details-header">
+                        <h4>Request Details</h4>
+                        <button 
+                          className="btn-primary btn-small"
+                          onClick={() => repeatRequest(log.id)}
+                          disabled={loading}
+                        >
+                          ↻ Repeat Request
+                        </button>
+                      </div>
+                      
+                      <div className="details-section">
+                        <h5>Target URL</h5>
+                        <code>{log.targetUrl}</code>
+                      </div>
+
+                      <div className="details-grid">
+                        <div className="details-half">
+                          <h5>Request Headers</h5>
+                          <pre className="details-pre">
+                            {log.requestHeaders ? JSON.stringify(log.requestHeaders, null, 2) : 'No headers'}
+                          </pre>
+                        </div>
+                        <div className="details-half">
+                          <h5>Response Headers</h5>
+                          <pre className="details-pre">
+                            {log.responseHeaders ? JSON.stringify(log.responseHeaders, null, 2) : 'No headers'}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {log.requestBody && (
+                        <div className="details-section">
+                          <h5>Request Body</h5>
+                          <pre className="details-pre">{log.requestBody}</pre>
+                        </div>
+                      )}
+
+                      {log.responseBody && (
+                        <div className="details-section">
+                          <h5>Response Body</h5>
+                          <pre className="details-pre">{log.responseBody}</pre>
+                        </div>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
+
+      <style>{`
+        .proxy-log-viewer {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          height: 600px;
+        }
+        .proxy-log-list {
+          flex: 1;
+          overflow-y: auto;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+        }
+        .proxy-log-entry {
+          display: flex;
+          padding: 0.5rem 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          cursor: pointer;
+          font-family: 'Consolas', monospace;
+          font-size: 0.85rem;
+          gap: 1rem;
+          align-items: center;
+        }
+        .proxy-log-entry:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+        .proxy-log-entry.selected {
+          background: rgba(var(--primary-rgb), 0.2);
+          border-left: 3px solid var(--primary);
+        }
+        .proxy-log-time { color: #666; width: 80px; }
+        .proxy-log-method { width: 50px; font-weight: bold; }
+        .proxy-log-path { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .proxy-log-status { width: 40px; text-align: right; }
+        .proxy-log-duration { width: 60px; text-align: right; color: #666; }
+
+        .proxy-log-details {
+          flex: 2;
+          overflow-y: auto;
+          background: #1e1e1e;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 1.5rem;
+        }
+        .details-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          border-bottom: 1px solid #333;
+          padding-bottom: 1rem;
+        }
+        .details-header h4 { margin: 0; }
+        .details-section { margin-bottom: 1.5rem; }
+        .details-section h5, .details-half h5 {
+          margin: 0 0 0.5rem 0;
+          color: #aaa;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+        }
+        .details-grid {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+        .details-half { flex: 1; }
+        .details-pre {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 1rem;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          max-height: 200px;
+          overflow: auto;
+          margin: 0;
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+        code {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 0.2rem 0.5rem;
+          border-radius: 4px;
+          word-break: break-all;
+        }
+      `}</style>
     </div>
   )
 }

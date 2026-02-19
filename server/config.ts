@@ -14,6 +14,9 @@ export interface ToolsConfig {
   jsonFormatter: ToolConfig
   xray: ToolConfig
   proxy: ToolConfig
+  generator: ToolConfig
+  timestamp: ToolConfig
+  cron: ToolConfig
 }
 
 export interface SSHConfig {
@@ -80,7 +83,10 @@ export function getDefaultConfig(): Config {
       jwt: { enabled: true, label: 'JWT Decoder', icon: '🔑' },
       jsonFormatter: { enabled: true, label: 'JSON Formatter', icon: '📝' },
       xray: { enabled: true, label: 'XRay Config', icon: '⚙️' },
-      proxy: { enabled: true, label: 'Proxy', icon: '🔀' }
+      proxy: { enabled: true, label: 'Proxy', icon: '🔀' },
+      generator: { enabled: true, label: 'Generator', icon: '🎲' },
+      timestamp: { enabled: true, label: 'Timestamp', icon: '🕒' },
+      cron: { enabled: true, label: 'Cron Explainer', icon: '📅' }
     },
     ssh: {
       host: '192.168.1.1',

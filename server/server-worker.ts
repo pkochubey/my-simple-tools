@@ -6,7 +6,7 @@ import { readXrayConfig, writeXrayConfig, testSSHConnection, xkeenAction } from 
 import { decodeJWT } from './jwt'
 import { convertBase64ToFile, extractBase64FromText, detectFileFormat, convertFileToBase64 } from './base64'
 import { formatJson, minifyJson, type FormatOptions } from './json'
-import { getProxyStatus, setProxyPort, addProxyRoute, removeProxyRoute, editProxyRoute, toggleProxyRoute, startProxy, stopProxy, clearProxyLogs } from './proxy'
+import { getProxyStatus, setProxyPort, addProxyRoute, removeProxyRoute, editProxyRoute, toggleProxyRoute, startProxy, stopProxy, clearProxyLogs, repeatProxyRequest } from './proxy'
 
 const config = loadConfig()
 const PORT = config.app.port
@@ -172,6 +172,12 @@ async function handleAPI(req: Request, path: string): Promise<Response> {
     if (path === '/api/proxy/logs/clear' && method === 'POST') {
       clearProxyLogs()
       return Response.json({ success: true })
+    }
+
+    if (path === '/api/proxy/repeat' && method === 'POST') {
+      const body = await req.json() as { logId: string }
+      const result = await repeatProxyRequest(body.logId)
+      return Response.json(result)
     }
 
     // JSON Formatter endpoints
