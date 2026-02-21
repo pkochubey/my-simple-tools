@@ -9,8 +9,10 @@ import ProxyTool from './components/ProxyTool'
 import GeneratorTool from './components/GeneratorTool'
 import TimestampTool from './components/TimestampTool'
 import CronTool from './components/CronTool'
+import BarcodeTool from './components/BarcodeTool'
+import Updater from './components/Updater'
 
-type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron'
+type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron' | 'barcode'
 
 interface ToolConfig {
   enabled: boolean
@@ -29,6 +31,7 @@ interface Config {
     generator: ToolConfig
     timestamp: ToolConfig
     cron: ToolConfig
+    barcode: ToolConfig
   }
 }
 
@@ -54,6 +57,7 @@ const App: FC = () => {
           else if (tools.generator?.enabled) setActiveTab('generator')
           else if (tools.timestamp?.enabled) setActiveTab('timestamp')
           else if (tools.cron?.enabled) setActiveTab('cron')
+          else if (tools.barcode?.enabled) setActiveTab('barcode')
         }
       })
       .catch(() => {
@@ -68,7 +72,8 @@ const App: FC = () => {
             proxy: { enabled: true, label: 'Proxy', icon: '🔀' },
             generator: { enabled: true, label: 'Generator', icon: '🎲' },
             timestamp: { enabled: true, label: 'Timestamp', icon: '🕒' },
-            cron: { enabled: true, label: 'Cron Explainer', icon: '📅' }
+            cron: { enabled: true, label: 'Cron Explainer', icon: '📅' },
+            barcode: { enabled: true, label: 'Barcode', icon: '🔲' }
           }
         })
       })
@@ -81,8 +86,10 @@ const App: FC = () => {
   const tools = config.tools
 
   return (
-    <div className="app">
-      <aside className="sidebar">
+    <>
+      <Updater />
+      <div className="app">
+        <aside className="sidebar">
         <div className="sidebar-header">
           <h1>Tools</h1>
         </div>
@@ -168,6 +175,15 @@ const App: FC = () => {
               <span className="tab-label">{tools.cron.label || 'Cron'}</span>
             </button>
           )}
+          {tools.barcode?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'barcode' ? 'active' : ''}`}
+              onClick={() => setActiveTab('barcode')}
+            >
+              <span className="tab-icon">{tools.barcode.icon || '🔲'}</span>
+              <span className="tab-label">{tools.barcode.label || 'Barcode'}</span>
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -181,8 +197,10 @@ const App: FC = () => {
         {activeTab === 'generator' && tools.generator?.enabled && <GeneratorTool />}
         {activeTab === 'timestamp' && tools.timestamp?.enabled && <TimestampTool />}
         {activeTab === 'cron' && tools.cron?.enabled && <CronTool />}
+        {activeTab === 'barcode' && tools.barcode?.enabled && <BarcodeTool />}
       </main>
-    </div>
+      </div>
+    </>
   )
 }
 

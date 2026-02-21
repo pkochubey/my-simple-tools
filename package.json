@@ -1,14 +1,17 @@
 {
   "name": "my-simple-tools",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "bun run server/index.ts",
     "dev:frontend": "vite",
-    "build": "bun run build:frontend && bun run build:app && bun run build:fix && bun run build:copy",
+    "build": "bun run build:frontend && bun run build:app && bun run build:copy",
     "build:frontend": "vite build",
-    "build:app": "bun build server/index.ts --windows-icon ./icon.ico --compile --outfile dist/my-simple-tools.exe",
+    "build:app": "bun run build:app:windows",
+    "build:app:windows": "bun build server/index.ts --windows-icon ./icon.ico --compile --outfile dist/my-simple-tools.exe && bun run build:fix",
+    "build:app:linux": "bun build server/index.ts --compile --outfile dist/my-simple-tools",
+    "build:app:macos": "bun build server/index.ts --compile --outfile dist/my-simple-tools",
     "build:fix": "python fix-subsystem.py dist/my-simple-tools.exe",
     "build:copy": "cp config.json dist/",
     "start": "bun run server/index.ts"
@@ -25,7 +28,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@types/bwip-js": "^3.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "bwip-js": "^4.8.0",
     "cronstrue": "^3.12.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

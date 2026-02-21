@@ -1,9 +1,9 @@
-name: Build Windows EXE
+name: Build Cross-Platform Apps
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,26 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: my-simple-tools-windows
+            build_cmd: bun run build:app:windows
+            archive_cmd: 7z a -tzip ../my-simple-tools-windows.zip *
+            asset_name: my-simple-tools-windows.zip
+          - os: ubuntu-latest
+            artifact_name: my-simple-tools-linux
+            build_cmd: bun run build:app:linux
+            archive_cmd: zip -r ../my-simple-tools-linux.zip *
+            asset_name: my-simple-tools-linux.zip
+          - os: macos-latest
+            artifact_name: my-simple-tools-macos
+            build_cmd: bun run build:app:macos
+            archive_cmd: zip -r ../my-simple-tools-macos.zip *
+            asset_name: my-simple-tools-macos.zip
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -22,23 +41,36 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Linux Dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev build-essential glib-2.0 cmake pkg-config
+
       - name: Install dependencies
         run: bun install
 
+      - name: Build frontend
+        run: bun run build:frontend
+
       - name: Build application
-        run: bun run build
+        run: ${{ matrix.build_cmd }}
+
+      - name: Copy config
+        run: bun run build:copy
 
       - name: Create distribution archive
         run: |
           cd dist
           cp ../.env.example .env.example
-          7z a -tzip ../my-simple-tools.zip *
+          ${{ matrix.archive_cmd }}
+        shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-simple-tools-windows
-          path: my-simple-tools.zip
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.asset_name }}
           retention-days: 30
 
   release:
@@ -47,13 +79,26 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Download artifact
+      - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
           name: my-simple-tools-windows
 
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-simple-tools-linux
+
+      - name: Download MacOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-simple-tools-macos
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: my-simple-tools.zip
+          files: |
+            my-simple-tools-windows.zip
+            my-simple-tools-linux.zip
+            my-simple-tools-macos.zip
           generate_release_notes: true
