@@ -1,8 +1,8 @@
 # My Simple Tools
 
-Windows desktop application with a collection of developer utilities.
+Cross-platform desktop application with a collection of developer utilities.
 
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![Platform](https://img.shields.io/badge/platform-Windows%20|%20macOS%20|%20Linux-blue)
 ![Runtime](https://img.shields.io/badge/runtime-Bun.js-orange)
 
 ## Features
@@ -39,6 +39,14 @@ UUID and Password/Secret generation.
 - Configurable password length (8-64)
 - Customizable character sets (Uppercase, Numbers, Symbols)
 - One-click copy to clipboard
+
+### Barcode Generator
+
+Generate 2D Barcodes and QR Codes instantly.
+
+- Support for QR Code, DataMatrix, and Code 128
+- Export and save as PNG image
+- Built-in live preview canvas
 
 ### Unix Timestamp Converter
 
@@ -105,9 +113,9 @@ bun run dev:frontend
 bun run build
 ```
 
-Output in `dist/`:
+This will run the cross-platform builds relying on the current OS. Output in `dist/`:
 
-- `my-simple-tools.exe` — executable (GUI, no console window)
+- Executable (`my-simple-tools.exe` on Windows or `my-simple-tools` on Unix)
 - `frontend/` — static frontend files
 - `config.json` — configuration
 
@@ -124,11 +132,15 @@ Copy `.env.example` to `.env` and set your password. The `.env` file is included
 
 ## Usage
 
-1. Place `config.json` and `.env` next to `my-simple-tools.exe`
-2. Run `my-simple-tools.exe`
+1. Place `config.json` and `.env` next to the executable
+2. Run `my-simple-tools.exe` (Windows) or `./my-simple-tools` (macOS/Linux)
 3. The application will open in a native window
+
+### Auto-Updates
+
+The application automatically checks for new releases on GitHub upon launch and displays a banner with a download link if a new version is available.
 
 ## Requirements
 
-- Windows 10/11
+- Windows 10/11, macOS, or modern Linux distribution
 - For building: Bun.js 1.0+
