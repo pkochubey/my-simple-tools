@@ -87,6 +87,19 @@ Lightweight reverse proxy server.
 - **Repeat Request** functionality
 - Real-time request logging
 
+### DOCX to Markdown
+
+Convert Microsoft Word documents to Markdown format.
+
+- Upload `.docx` files via drag & drop or file picker
+- Automatic conversion preserving structure (headings, lists, code blocks, etc.)
+- **Toggle for images**: Include/exclude images in output
+  - When enabled: Images embedded as data URI in markdown
+  - When disabled: Images are skipped during conversion
+- Syntax-highlighted preview with character limit for large files
+- Copy full Markdown to clipboard
+- Download as `.md` file
+
 ## Tech Stack
 
 - **Runtime:** Bun.js

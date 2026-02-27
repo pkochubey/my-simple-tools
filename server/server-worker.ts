@@ -7,6 +7,7 @@ import { decodeJWT } from './jwt'
 import { convertBase64ToFile, extractBase64FromText, detectFileFormat, convertFileToBase64 } from './base64'
 import { formatJson, minifyJson, type FormatOptions } from './json'
 import { getProxyStatus, setProxyPort, addProxyRoute, removeProxyRoute, editProxyRoute, toggleProxyRoute, startProxy, stopProxy, clearProxyLogs, repeatProxyRequest } from './proxy'
+import { convertDocxToMd } from './docx'
 
 const config = loadConfig()
 const PORT = config.app.port
@@ -190,6 +191,18 @@ async function handleAPI(req: Request, path: string): Promise<Response> {
     if (path === '/api/json/minify' && method === 'POST') {
       const body = await req.json() as { input: string }
       const result = minifyJson(body.input)
+      return Response.json(result)
+    }
+
+    if (path === '/api/docx/convert' && method === 'POST') {
+      const formData = await req.formData()
+      const file = formData.get('file') as File
+      if (!file) {
+        return Response.json({ success: false, error: 'No file provided' }, { status: 400 })
+      }
+      const includeImages = formData.get('includeImages') === 'true'
+      const buffer = Buffer.from(await file.arrayBuffer())
+      const result = await convertDocxToMd(buffer, { includeImages })
       return Response.json(result)
     }
 

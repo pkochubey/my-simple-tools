@@ -10,9 +10,10 @@ import GeneratorTool from './components/GeneratorTool'
 import TimestampTool from './components/TimestampTool'
 import CronTool from './components/CronTool'
 import BarcodeTool from './components/BarcodeTool'
+import DocxToMdTool from './components/DocxToMdTool'
 import Updater from './components/Updater'
 
-type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron' | 'barcode'
+type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron' | 'barcode' | 'docxToMd'
 
 interface ToolConfig {
   enabled: boolean
@@ -32,6 +33,7 @@ interface Config {
     timestamp: ToolConfig
     cron: ToolConfig
     barcode: ToolConfig
+    docxToMd: ToolConfig
   }
 }
 
@@ -58,6 +60,7 @@ const App: FC = () => {
           else if (tools.timestamp?.enabled) setActiveTab('timestamp')
           else if (tools.cron?.enabled) setActiveTab('cron')
           else if (tools.barcode?.enabled) setActiveTab('barcode')
+          else if (tools.docxToMd?.enabled) setActiveTab('docxToMd')
         }
       })
       .catch(() => {
@@ -73,7 +76,8 @@ const App: FC = () => {
             generator: { enabled: true, label: 'Generator', icon: '🎲' },
             timestamp: { enabled: true, label: 'Timestamp', icon: '🕒' },
             cron: { enabled: true, label: 'Cron Explainer', icon: '📅' },
-            barcode: { enabled: true, label: 'Barcode', icon: '🔲' }
+            barcode: { enabled: true, label: 'Barcode', icon: '🔲' },
+            docxToMd: { enabled: true, label: 'DOCX to MD', icon: '📝' }
           }
         })
       })
@@ -184,6 +188,15 @@ const App: FC = () => {
               <span className="tab-label">{tools.barcode.label || 'Barcode'}</span>
             </button>
           )}
+          {tools.docxToMd?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'docxToMd' ? 'active' : ''}`}
+              onClick={() => setActiveTab('docxToMd')}
+            >
+              <span className="tab-icon">{tools.docxToMd.icon || '📝'}</span>
+              <span className="tab-label">{tools.docxToMd.label || 'DOCX to MD'}</span>
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -198,6 +211,7 @@ const App: FC = () => {
         {activeTab === 'timestamp' && tools.timestamp?.enabled && <TimestampTool />}
         {activeTab === 'cron' && tools.cron?.enabled && <CronTool />}
         {activeTab === 'barcode' && tools.barcode?.enabled && <BarcodeTool />}
+        {activeTab === 'docxToMd' && tools.docxToMd?.enabled && <DocxToMdTool />}
       </main>
       </div>
     </>

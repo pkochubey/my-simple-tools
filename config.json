@@ -49,6 +49,11 @@
       "enabled": true,
       "label": "Barcode",
       "icon": "🔲"
+    },
+    "docxToMd": {
+      "enabled": true,
+      "label": "DOCX to MD",
+      "icon": "📝"
     }
   },
   "ssh": {
