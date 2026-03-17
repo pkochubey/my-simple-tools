@@ -11,9 +11,10 @@ import TimestampTool from './components/TimestampTool'
 import CronTool from './components/CronTool'
 import BarcodeTool from './components/BarcodeTool'
 import DocxToMdTool from './components/DocxToMdTool'
+import JsonToCsvTool from './components/JsonToCsvTool'
 import Updater from './components/Updater'
 
-type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron' | 'barcode' | 'docxToMd'
+type Tab = 'base64' | 'fileToBase64' | 'jwt' | 'jsonFormatter' | 'jsonToCsv' | 'xray' | 'proxy' | 'generator' | 'timestamp' | 'cron' | 'barcode' | 'docxToMd'
 
 interface ToolConfig {
   enabled: boolean
@@ -34,6 +35,7 @@ interface Config {
     cron: ToolConfig
     barcode: ToolConfig
     docxToMd: ToolConfig
+    jsonToCsv: ToolConfig
   }
 }
 
@@ -61,6 +63,7 @@ const App: FC = () => {
           else if (tools.cron?.enabled) setActiveTab('cron')
           else if (tools.barcode?.enabled) setActiveTab('barcode')
           else if (tools.docxToMd?.enabled) setActiveTab('docxToMd')
+          else if (tools.jsonToCsv?.enabled) setActiveTab('jsonToCsv')
         }
       })
       .catch(() => {
@@ -77,7 +80,8 @@ const App: FC = () => {
             timestamp: { enabled: true, label: 'Timestamp', icon: '🕒' },
             cron: { enabled: true, label: 'Cron Explainer', icon: '📅' },
             barcode: { enabled: true, label: 'Barcode', icon: '🔲' },
-            docxToMd: { enabled: true, label: 'DOCX to MD', icon: '📝' }
+            docxToMd: { enabled: true, label: 'DOCX to MD', icon: '📝' },
+            jsonToCsv: { enabled: true, label: 'JSON to CSV', icon: '📊' }
           }
         })
       })
@@ -197,6 +201,15 @@ const App: FC = () => {
               <span className="tab-label">{tools.docxToMd.label || 'DOCX to MD'}</span>
             </button>
           )}
+          {tools.jsonToCsv?.enabled && (
+            <button
+              className={`sidebar-tab ${activeTab === 'jsonToCsv' ? 'active' : ''}`}
+              onClick={() => setActiveTab('jsonToCsv')}
+            >
+              <span className="tab-icon">{tools.jsonToCsv.icon || '📊'}</span>
+              <span className="tab-label">{tools.jsonToCsv.label || 'JSON to CSV'}</span>
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -212,6 +225,7 @@ const App: FC = () => {
         {activeTab === 'cron' && tools.cron?.enabled && <CronTool />}
         {activeTab === 'barcode' && tools.barcode?.enabled && <BarcodeTool />}
         {activeTab === 'docxToMd' && tools.docxToMd?.enabled && <DocxToMdTool />}
+        {activeTab === 'jsonToCsv' && tools.jsonToCsv?.enabled && <JsonToCsvTool />}
       </main>
       </div>
     </>

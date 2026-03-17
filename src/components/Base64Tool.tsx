@@ -11,7 +11,7 @@ const Base64Tool: FC = () => {
   const [extractedItems, setExtractedItems] = useState<ExtractedItem[]>([])
   const [selectedFormat, setSelectedFormat] = useState('bin')
   const [converting, setConverting] = useState(false)
-  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [result, setResult] = useState<{ success: boolean; message: string; filePath?: string } | null>(null)
 
   const formats = [
     { value: 'bin', label: 'Binary (.bin)' },
@@ -63,6 +63,7 @@ const Base64Tool: FC = () => {
         setResult({
           success: true,
           message: `File saved to: ${data.filePath}`,
+          filePath: data.filePath,
         })
       } else {
         setResult({ success: false, message: data.error || 'Conversion failed' })
@@ -72,6 +73,20 @@ const Base64Tool: FC = () => {
     }
 
     setConverting(false)
+  }
+
+  const handleOpenFile = async () => {
+    if (!result?.filePath) return
+
+    try {
+      await fetch('/api/utils/open-file', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath: result.filePath }),
+      })
+    } catch (e) {
+      console.error('Failed to open file', e)
+    }
   }
 
   return (
@@ -136,7 +151,18 @@ const Base64Tool: FC = () => {
 
       {result && (
         <div className={`result ${result.success ? 'success' : 'error'}`}>
-          {result.message}
+          <div className="result-content">
+            {result.message}
+            {result.success && result.filePath && (
+              <button 
+                onClick={handleOpenFile} 
+                className="btn-link" 
+                style={{ marginLeft: '10px', verticalAlign: 'middle' }}
+              >
+                Open File
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

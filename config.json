@@ -54,6 +54,11 @@
       "enabled": true,
       "label": "DOCX to MD",
       "icon": "📝"
+    },
+    "jsonToCsv": {
+      "enabled": true,
+      "label": "JSON to CSV",
+      "icon": "📊"
     }
   },
   "ssh": {

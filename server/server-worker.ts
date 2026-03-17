@@ -8,6 +8,8 @@ import { convertBase64ToFile, extractBase64FromText, detectFileFormat, convertFi
 import { formatJson, minifyJson, type FormatOptions } from './json'
 import { getProxyStatus, setProxyPort, addProxyRoute, removeProxyRoute, editProxyRoute, toggleProxyRoute, startProxy, stopProxy, clearProxyLogs, repeatProxyRequest } from './proxy'
 import { convertDocxToMd } from './docx'
+import { convertJsonToCsv } from './csv'
+import { exec } from 'child_process'
 
 const config = loadConfig()
 const PORT = config.app.port
@@ -204,6 +206,34 @@ async function handleAPI(req: Request, path: string): Promise<Response> {
       const buffer = Buffer.from(await file.arrayBuffer())
       const result = await convertDocxToMd(buffer, { includeImages })
       return Response.json(result)
+    }
+
+    if (path === '/api/json/to-csv' && method === 'POST') {
+      const body = await req.json() as { input: string; delimiter?: string }
+      const result = convertJsonToCsv(body.input, body.delimiter)
+      return Response.json(result)
+    }
+
+    if (path === '/api/utils/open-file' && method === 'POST') {
+      const body = await req.json() as { filePath: string }
+      if (!body.filePath || !existsSync(body.filePath)) {
+        return Response.json({ success: false, error: 'File not found' }, { status: 404 })
+      }
+
+      // Open file with default OS application
+      const command = process.platform === 'win32'
+        ? `start "" "${body.filePath}"`
+        : process.platform === 'darwin'
+          ? `open "${body.filePath}"`
+          : `xdg-open "${body.filePath}"`
+
+      exec(command, (error) => {
+        if (error) {
+          console.error(`Failed to open file: ${error.message}`)
+        }
+      })
+
+      return Response.json({ success: true })
     }
 
     return Response.json({ success: false, error: 'Unknown API endpoint' }, { status: 404 })
